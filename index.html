@@ -3,425 +3,354 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dodge & Collect — Game Web</title>
+  <title>Math Puzzle — Game Hitung & Teka-teki</title>
   <style>
     :root{
-      --bg: #0f1226; /* gelap biru */
-      --card: #161a36;
-      --acc: #6ee7ff;
-      --acc2:#a78bfa;
-      --good:#34d399;
-      --bad:#f43f5e;
-      --text:#e5e7eb;
-      --muted:#9ca3af;
-      --shadow: 0 10px 25px rgba(0,0,0,.35);
-      --radius: 18px;
+      --bg:#0b1020; --panel:#121733; --muted:#a3adc2; --text:#e8ecf8; --brand:#7dd3fc; --brand2:#a78bfa;
+      --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444; --radius:18px; --shadow:0 10px 25px rgba(0,0,0,.4)
     }
     *{box-sizing:border-box}
     html,body{height:100%}
-    body{
-      margin:0; background: radial-gradient(1200px 700px at 20% 10%, #1b1f45 0%, #0f1226 60%, #0a0c1a 100%);
-      color:var(--text); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
-      display:flex; align-items:center; justify-content:center; padding:16px;
-      overflow:hidden;
-    }
-    .shell{width:100%; max-width:980px; display:grid; gap:16px}
-    .topbar{
-      display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
-      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:var(--radius);
-      padding:10px 14px; box-shadow:var(--shadow);
-      backdrop-filter: blur(8px);
-    }
+    body{margin:0; background:radial-gradient(1200px 700px at 15% 10%, #1a2150 0%, #0b1020 60%, #070a16 100%);
+      color:var(--text); font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      display:flex; align-items:center; justify-content:center; padding:16px}
+
+    .app{width:100%; max-width:980px; display:grid; gap:16px}
+    .topbar{display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.1);
+      padding:10px 14px; border-radius:var(--radius); backdrop-filter: blur(6px); box-shadow:var(--shadow)}
     .brand{display:flex; gap:10px; align-items:center}
-    .logo{width:34px; height:34px; border-radius:10px; background:linear-gradient(135deg,var(--acc),var(--acc2)); box-shadow:0 6px 18px rgba(167,139,250,.35)}
-    .brand h1{font-size:18px; margin:0}
+    .logo{width:34px; height:34px; border-radius:12px; background:linear-gradient(135deg,var(--brand),var(--brand2)); box-shadow:0 8px 20px rgba(167,139,250,.35)}
+    h1{font-size:18px; margin:0}
+    .top-actions{display:flex; gap:8px; flex-wrap:wrap}
+    .btn{appearance:none; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.06); color:var(--text);
+      padding:8px 12px; border-radius:12px; cursor:pointer; box-shadow:var(--shadow)}
+    .btn.primary{border:none; background:linear-gradient(135deg,var(--brand),var(--brand2)); color:#0b0f1c; font-weight:700}
 
-    .tags{display:flex; gap:8px; flex-wrap:wrap}
-    .tag{padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.14); color:var(--muted); font-size:12px}
+    .panel{display:grid; grid-template-columns:1fr; gap:16px}
+    .hud{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.1);
+      padding:12px 14px; border-radius:var(--radius)}
+    .pill{display:flex; align-items:center; gap:8px; padding:6px 10px; border:1px solid rgba(255,255,255,.12); border-radius:999px; background:rgba(255,255,255,.06)}
+    .value{font-weight:700}
 
-    .panel{display:grid; grid-template-columns: 1fr; gap:16px}
+    .wrap{position:relative; background:linear-gradient(180deg,#0c1026,#0b0f24); border-radius:var(--radius); border:1px solid rgba(255,255,255,.1); box-shadow:var(--shadow); overflow:hidden}
 
-    .hud{
-      display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap;
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:var(--radius); padding:12px 14px; box-shadow:var(--shadow);
-    }
-    .hud .group{display:flex; gap:14px; align-items:center; flex-wrap:wrap}
-    .pill{display:flex; gap:8px; align-items:center; padding:6px 10px; border-radius:999px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.08); font-size:13px}
-    .dot{width:10px; height:10px; border-radius:50%}
-    .dot.good{background:var(--good)}
-    .dot.bad{background:var(--bad)}
+    .screen{min-height:460px; display:grid; place-items:center; padding:24px}
 
-    .wrap{
-      position:relative; background: linear-gradient(180deg, #0b0e1f, #0b0c19);
-      border-radius: var(--radius); border:1px solid rgba(255,255,255,.08); box-shadow: var(--shadow);
-      aspect-ratio: 16/9; min-height: 460px; max-height: 70vh; overflow:hidden;
-    }
+    .card{width:min(780px,96%); text-align:center; background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03)); border:1px solid rgba(255,255,255,.12);
+      border-radius:calc(var(--radius) + 6px); padding:18px}
 
-    canvas{position:absolute; inset:0; width:100%; height:100%}
+    .modes{display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr)); gap:12px; margin:12px 0}
+    .mode{padding:14px; border:1px solid rgba(255,255,255,.14); border-radius:14px; background:rgba(255,255,255,.06); cursor:pointer}
+    .mode:hover{transform:translateY(-2px)}
 
-    .overlay{position:absolute; inset:0; display:grid; place-items:center; padding:20px}
-    .card{
-      width:min(520px, 92%);
-      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
-      border:1px solid rgba(255,255,255,.12); border-radius: calc(var(--radius) + 6px);
-      padding:20px; text-align:center; box-shadow:var(--shadow);
-      backdrop-filter: blur(6px);
-    }
-    .title{font-size:28px; margin:6px 0 12px}
-    .desc{color:var(--muted); margin:0 0 14px}
+    .question{font-size:44px; line-height:1.1; letter-spacing:1px; margin:10px 0 4px}
+    .sub{color:var(--muted); margin:6px 0 14px}
 
-    .btns{display:flex; gap:10px; justify-content:center; flex-wrap:wrap}
-    .btn{appearance:none; border:0; cursor:pointer; border-radius:14px; padding:10px 14px; font-weight:600; box-shadow:var(--shadow)}
-    .btn.primary{background:linear-gradient(135deg, var(--acc), var(--acc2)); color:#0b0d1c}
-    .btn.ghost{background:transparent; border:1px solid rgba(255,255,255,.16); color:var(--text)}
+    .answer-wrap{display:grid; gap:10px; justify-items:center}
+    .input{font-size:28px; padding:10px 12px; border-radius:12px; border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.08); color:var(--text); width:min(360px, 90%); text-align:center}
+    .choices{display:grid; grid-template-columns: repeat(auto-fit, minmax(120px,1fr)); gap:10px; width:min(600px,95%); margin-top:8px}
+    .choice{padding:10px; border-radius:12px; border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.06); cursor:pointer}
+    .choice.correct{outline:3px solid var(--ok)}
+    .choice.wrong{outline:3px solid var(--bad)}
 
-    .keys{display:grid; grid-template-columns: repeat(3, minmax(80px,1fr)); gap:10px; margin-top:10px}
-    .key{border:1px solid rgba(255,255,255,.12); padding:10px; border-radius:12px; color:var(--muted)}
+    .result{font-size:14px; color:var(--muted); min-height:20px}
+    .progress{height:10px; width:100%; background:rgba(255,255,255,.08); border-radius:999px; overflow:hidden; margin-top:10px}
+    .bar{height:100%; width:100%; background:linear-gradient(90deg,var(--brand),var(--brand2))}
 
-    .toast{position:absolute; left:12px; bottom:12px; padding:8px 12px; border-radius:12px; font-size:13px; background:rgba(0,0,0,.4); border:1px solid rgba(255,255,255,.12)}
+    .foot{display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:12px}
 
-    /* Mobile controls */
-    .pad{position:absolute; right:16px; bottom:16px; display:none; gap:10px}
-    .pad .circle{width:58px; height:58px; border-radius:50%; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.06); display:grid; place-items:center; user-select:none}
-    .pad .circle:active{transform:scale(.96)}
+    .toast{position:absolute; left:12px; bottom:12px; padding:8px 12px; border-radius:12px; font-size:13px; background:rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.12)}
 
-    @media (max-width: 860px){
-      .pad{display:flex}
+    @media (max-width:560px){
+      .question{font-size:34px}
     }
   </style>
 </head>
 <body>
-  <div class="shell">
+  <div class="app">
     <div class="topbar">
-      <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
-        <h1>Dodge & Collect</h1>
-      </div>
-      <div class="tags">
-        <div class="tag">HTML + CSS + JS</div>
-        <div class="tag">Keyboard & Sentuh</div>
-        <div class="tag">Simpan Skor</div>
+      <div class="brand"><div class="logo"></div><h1>Math Puzzle</h1></div>
+      <div class="top-actions">
+        <button class="btn" id="toggleSound" aria-pressed="false">Suara: OFF</button>
+        <button class="btn" id="toggleMode">Mode: Isian</button>
+        <button class="btn" id="howBtn">Cara Main</button>
+        <button class="btn primary" id="playBtn">Mulai ▶</button>
       </div>
     </div>
 
     <div class="panel">
       <div class="hud">
-        <div class="group">
-          <div class="pill" id="scorePill">Skor: <strong id="score">0</strong></div>
-          <div class="pill">Level: <strong id="level">1</strong></div>
-          <div class="pill">Nyawa: <strong id="lives">3</strong></div>
-          <div class="pill">Best: <strong id="best">0</strong></div>
+        <div class="pill">Skor: <span class="value" id="score">0</span></div>
+        <div class="pill">Streak: <span class="value" id="streak">0</span></div>
+        <div class="pill">Sisa: <span class="value" id="time">60</span> dtk</div>
+        <div class="pill">Best: <span class="value" id="best">0</span></div>
+        <div class="pill">Kesulitan:
+          <select id="difficulty" class="btn" style="padding:6px 8px">
+            <option value="1">Mudah</option>
+            <option value="2">Sedang</option>
+            <option value="3">Sulit</option>
+          </select>
         </div>
-        <div class="group">
-          <button class="btn ghost" id="toggleSound" aria-pressed="false">Suara: OFF</button>
-          <button class="btn ghost" id="pauseBtn">Jeda</button>
-          <button class="btn ghost" id="restartBtn">Ulang</button>
+        <div class="pill">Jenis Soal:
+          <select id="type" class="btn" style="padding:6px 8px">
+            <option value="mix">Campuran</option>
+            <option value="add">Penjumlahan</option>
+            <option value="sub">Pengurangan</option>
+            <option value="mul">Perkalian</option>
+            <option value="eqx">Cari x (persamaan)</option>
+            <option value="cmp">Bandingkan (>,<,=)</option>
+          </select>
         </div>
       </div>
 
       <div class="wrap">
-        <canvas id="game"></canvas>
-
-        <div class="overlay" id="menu">
+        <div class="screen" id="menu">
           <div class="card">
-            <div class="title">Selamat Datang!</div>
-            <p class="desc">Gerakkan pemain untuk <b>menghindari rintangan merah</b> dan <b>mengambil orbs hijau</b>. Kumpulkan skor setinggi mungkin.</p>
-            <div class="btns"><button class="btn primary" id="playBtn">Mulai Main</button></div>
-            <div class="keys">
-              <div class="key">W / ⬆️ : Naik</div>
-              <div class="key">A / ⬅️ : Kiri</div>
-              <div class="key">S / ⬇️ : Turun</div>
-              <div class="key">D / ➡️ : Kanan</div>
-              <div class="key">Spasi : Jeda</div>
-              <div class="key">Sentuh: Tombol bulat</div>
+            <h2 style="margin:6px 0 10px">Selamat Datang 👋</h2>
+            <p class="sub">Jawab sebanyak mungkin dalam 60 detik. Pilih jenis soal & tingkat kesulitan, lalu klik <b>Mulai</b>.</p>
+            <div class="modes">
+              <div class="mode"><b>Isian</b><br/>Ketik jawaban di kolom.</div>
+              <div class="mode"><b>Pilihan</b><br/>Pilih 1 dari 4 opsi.</div>
+              <div class="mode"><b>Campuran</b><br/>Soal acak berbagai tipe.</div>
             </div>
+            <button class="btn primary" id="startBtn">Mulai Sekarang</button>
           </div>
         </div>
 
-        <div class="overlay" id="gameOver" style="display:none">
+        <div class="screen" id="game" style="display:none">
           <div class="card">
-            <div class="title">Game Over</div>
-            <p class="desc">Skor kamu: <b id="finalScore">0</b> • Level: <b id="finalLevel">1</b></p>
-            <div class="btns">
-              <button class="btn primary" id="againBtn">Main Lagi</button>
-              <button class="btn ghost" id="shareBtn">Bagikan</button>
+            <div class="question" id="q"></div>
+            <div class="sub" id="hint"></div>
+            <div class="answer-wrap">
+              <input id="answer" class="input" type="text" placeholder="Ketik jawaban…" autocomplete="off" />
+              <div class="choices" id="choices" style="display:none"></div>
+              <div class="foot">
+                <button class="btn" id="skipBtn">Lewati (−1)</button>
+                <button class="btn" id="pauseBtn">Jeda</button>
+                <button class="btn" id="restartBtn">Ulang</button>
+              </div>
+              <div class="progress"><div class="bar" id="bar"></div></div>
+              <div class="result" id="result"></div>
             </div>
           </div>
+          <div class="toast" id="toast" style="display:none"></div>
         </div>
 
-        <div class="toast" id="toast" style="display:none">Paused</div>
-
-        <div class="pad" aria-label="Kontrol Sentuh">
-          <div class="circle" data-dir="up">⬆️</div>
-          <div class="circle" data-dir="left">⬅️</div>
-          <div class="circle" data-dir="down">⬇️</div>
-          <div class="circle" data-dir="right">➡️</div>
+        <div class="screen" id="over" style="display:none">
+          <div class="card">
+            <h2>Waktu Habis ⏱️</h2>
+            <p class="sub">Skor: <b id="finalScore">0</b> • Streak Maks: <b id="finalStreak">0</b></p>
+            <div class="foot"><button class="btn primary" id="againBtn">Main Lagi</button>
+              <button class="btn" id="shareBtn">Bagikan</button></div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <audio id="sndCollect" preload="auto">
-    <source src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABYBWFlaAAABAACAgICA" type="audio/wav" />
-  </audio>
-  <audio id="sndHit" preload="auto">
-    <source src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABYBWFlaAAABAACAgICA" type="audio/wav" />
-  </audio>
+  <audio id="sndGood"><source src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABYBWFlaAAABAACAgICA" type="audio/wav"></audio>
+  <audio id="sndBad"><source src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABYBWFlaAAABAACAgICA" type="audio/wav"></audio>
 
   <script>
   (()=>{
-    const canvas = document.getElementById('game');
-    const ctx = canvas.getContext('2d');
-
-    // Resize canvas to fit element size
-    function fit(){
-      const r = canvas.getBoundingClientRect();
-      const dpr = Math.min(2, window.devicePixelRatio || 1);
-      canvas.width = Math.floor(r.width * dpr);
-      canvas.height = Math.floor(r.height * dpr);
-      ctx.setTransform(dpr,0,0,dpr,0,0);
-    }
-    addEventListener('resize', fit, {passive:true});
-    fit();
-
-    // Game state
-    const state = {
-      running:false,
-      paused:false,
-      frame:0,
-      level:1,
-      score:0,
-      lives:3,
-      best: Number(localStorage.getItem('dc_best')||0),
-      sound:false
-    };
-
-    // Entities
-    const player = {x:120, y:120, r:14, vx:0, vy:0, speed:3.4, max:5.4};
-    const orbs = [];
-    const hazards = [];
-
+    const $ = sel => document.querySelector(sel);
     const UI = {
-      score: document.getElementById('score'),
-      level: document.getElementById('level'),
-      lives: document.getElementById('lives'),
-      best: document.getElementById('best'),
-      menu: document.getElementById('menu'),
-      over: document.getElementById('gameOver'),
-      finalScore: document.getElementById('finalScore'),
-      finalLevel: document.getElementById('finalLevel'),
-      toast: document.getElementById('toast')
+      score: $('#score'), streak: $('#streak'), time: $('#time'), best: $('#best'),
+      q: $('#q'), hint: $('#hint'), ans: $('#answer'), choices: $('#choices'), res: $('#result'), bar: $('#bar'), toast: $('#toast'),
+      menu: $('#menu'), game: $('#game'), over: $('#over'), finalScore: $('#finalScore'), finalStreak: $('#finalStreak')
     };
+
+    const controls = {
+      startBtn: $('#startBtn'), playBtn: $('#playBtn'), againBtn: $('#againBtn'), restartBtn: $('#restartBtn'),
+      pauseBtn: $('#pauseBtn'), skipBtn: $('#skipBtn'), shareBtn: $('#shareBtn'), howBtn: $('#howBtn'),
+      diff: $('#difficulty'), type: $('#type'), toggleSound: $('#toggleSound'), toggleMode: $('#toggleMode')
+    };
+
+    const sndGood = $('#sndGood'), sndBad = $('#sndBad');
+
+    const state = {
+      running:false, paused:false, t:60, score:0, streak:0, best:Number(localStorage.getItem('mp_best')||0),
+      mode:'input', // input | choice
+      kind:'mix', difficulty:1, sound:false,
+      current:null, timer:null
+    };
+
     UI.best.textContent = state.best;
 
-    const sndCollect = document.getElementById('sndCollect');
-    const sndHit = document.getElementById('sndHit');
-
-    // Controls
-    const keys = new Set();
-    addEventListener('keydown', e=>{
-      if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' ','Space','w','a','s','d','W','A','S','D'].includes(e.key)) e.preventDefault();
-      if(e.key===' ') togglePause();
-      keys.add(e.key.toLowerCase());
-    }, {passive:false});
-    addEventListener('keyup', e=> keys.delete(e.key.toLowerCase()));
-
-    document.querySelectorAll('.pad .circle').forEach(btn=>{
-      const dir = btn.dataset.dir;
-      const map = {up:'w',down:'s',left:'a',right:'d'};
-      const k = map[dir];
-      const press = ()=>{ keys.add(k); setTimeout(()=>keys.delete(k), 120); };
-      btn.addEventListener('touchstart', e=>{ e.preventDefault(); press(); }, {passive:false});
-      btn.addEventListener('click', press);
-    });
-
-    // Buttons
-    document.getElementById('playBtn').onclick = start;
-    document.getElementById('againBtn').onclick = ()=>{ hide(UI.over); start(); };
-    document.getElementById('restartBtn').onclick = ()=>{ start(); };
-    document.getElementById('pauseBtn').onclick = ()=> togglePause();
-    document.getElementById('toggleSound').onclick = (e)=>{
-      state.sound = !state.sound; e.target.setAttribute('aria-pressed', state.sound);
-      e.target.textContent = 'Suara: ' + (state.sound? 'ON':'OFF');
-    };
-    document.getElementById('shareBtn').onclick = share;
+    // ===== Helpers =====
+    const rand = (a,b)=> a + Math.floor(Math.random()*(b-a+1));
+    const pick = arr => arr[Math.floor(Math.random()*arr.length)];
 
     function show(el){ el.style.display='grid'; }
     function hide(el){ el.style.display='none'; }
 
+    function toast(msg){ UI.toast.textContent=msg; UI.toast.style.display='block'; clearTimeout(toast._t); toast._t=setTimeout(()=>UI.toast.style.display='none', 900); }
+
+    // ===== Question Generators =====
+    function genNumbers(range){
+      const r = {1:[0,9], 2:[5,25], 3:[12,60]}[state.difficulty];
+      return [rand(r[0], r[1]), rand(r[0], r[1])];
+    }
+
+    function build(){
+      const kind = state.kind==='mix'? pick(['add','sub','mul','eqx','cmp']): state.kind;
+      const [a,b] = genNumbers();
+      let q, answer, hint='';
+      if(kind==='add'){ q = `${a} + ${b} = ?`; answer = a+b; hint = 'Jumlahkan kedua bilangan.'; }
+      else if(kind==='sub'){ q = `${a} − ${b} = ?`; answer = a-b; hint = 'Kurangi bilangan pertama dengan kedua.'; }
+      else if(kind==='mul'){
+        const m1 = state.difficulty===1? rand(0,9): a; const m2 = state.difficulty===1? rand(0,9): b;
+        q = `${m1} × ${m2} = ?`; answer = m1*m2; hint = 'Perkalian.';
+      }
+      else if(kind==='eqx'){
+        // bentuk: a + x = b  atau  x − a = b
+        if(Math.random()<0.5){ const rhs = a+b; q = `${a} + x = ${rhs}`; answer = b; hint='Cari nilai x.'; }
+        else { const rhs = b-a; q = `x − ${a} = ${rhs}`; answer = b; hint='Pindah ruas untuk temukan x.'; }
+      }
+      else if(kind==='cmp'){
+        const left = rand(0,50) + a, right = rand(0,50) + b;
+        const comp = left===right? '=' : (left>right? '>' : '<');
+        q = `${left} ? ${right}`; answer = comp; hint='Pilih tanda yang benar.';
+      }
+      return {kind, q, answer, hint};
+    }
+
+    function renderQuestion(){
+      state.current = build();
+      UI.q.textContent = state.current.q; UI.hint.textContent = state.current.hint; UI.res.textContent='';
+      UI.ans.value=''; UI.ans.style.outline='none';
+
+      if(state.mode==='choice' || state.current.kind==='cmp'){
+        UI.choices.style.display='grid'; UI.ans.style.display = state.current.kind==='cmp'? 'none':'none';
+        UI.choices.innerHTML='';
+        let options = [];
+        if(state.current.kind==='cmp'){
+          options = ['>','<','='];
+        } else {
+          const correct = state.current.answer;
+          options = [correct];
+          while(options.length<4){
+            const delta = rand(-9,9) || rand(2,6);
+            const fake = correct + delta;
+            if(!options.includes(fake)) options.push(fake);
+          }
+          options.sort(()=>Math.random()-0.5);
+        }
+        for(const opt of options){
+          const btn = document.createElement('button'); btn.className='choice'; btn.textContent=String(opt);
+          btn.onclick = ()=> submit(opt);
+          UI.choices.appendChild(btn);
+        }
+      } else {
+        UI.choices.style.display='none'; UI.ans.style.display='block'; UI.ans.focus();
+      }
+    }
+
+    function submit(val){
+      const correct = String(state.current.answer);
+      const given = String(val ?? UI.ans.value.trim());
+      if(!given){ toast('Isi jawabannya dulu ya'); return; }
+
+      const isRight = given === correct;
+      feedback(isRight);
+      if(isRight){
+        state.score += 5 + Math.min(15, state.streak); // bonus dari streak
+        state.streak++;
+        if(state.sound) play(sndGood);
+      } else {
+        state.score = Math.max(0, state.score-1);
+        state.streak = 0;
+        if(state.sound) play(sndBad);
+      }
+      UI.score.textContent = state.score; UI.streak.textContent = state.streak;
+      renderQuestion();
+    }
+
+    function feedback(ok){
+      UI.res.textContent = ok? 'Benar! 🎉' : `Salah. Jawaban: ${state.current.answer}`;
+      flash(ok? 'var(--ok)':'var(--bad)');
+      if(state.mode==='choice'){
+        [...UI.choices.children].forEach(c=>{
+          if(c.textContent===String(state.current.answer)) c.classList.add('correct');
+        });
+        setTimeout(()=>{ [...UI.choices.children].forEach(c=>c.classList.remove('correct','wrong')); }, 260);
+      }
+    }
+
+    function flash(cssColor){
+      const wrap = document.querySelector('.wrap');
+      const prev = wrap.style.boxShadow;
+      wrap.style.boxShadow = `0 0 0 4px color-mix(in oklab, ${cssColor} 30%, transparent), var(--shadow)`;
+      setTimeout(()=> wrap.style.boxShadow = prev, 220);
+    }
+
     function start(){
-      // reset
-      state.running = true; state.paused=false; state.frame=0; state.level=1; state.score=0; state.lives=3;
-      player.x = canvas.width/2/ (window.devicePixelRatio||1); player.y = canvas.height/2/ (window.devicePixelRatio||1);
-      player.vx = player.vy = 0;
-      orbs.length=0; hazards.length=0;
-      spawnInitial();
-      hide(UI.menu); hide(UI.over); UI.toast.style.display='none';
-      loop();
+      state.running=true; state.paused=false; state.t=60; state.score=0; state.streak=0;
+      UI.score.textContent='0'; UI.streak.textContent='0'; UI.time.textContent='60'; UI.res.textContent='';
+      hide(UI.menu); hide(UI.over); show(UI.game);
+      renderQuestion();
+      tick();
     }
 
     function gameOver(){
-      state.running=false;
-      UI.finalScore.textContent = state.score;
-      UI.finalLevel.textContent = state.level;
-      if(state.score>state.best){ state.best=state.score; localStorage.setItem('dc_best', String(state.best)); }
+      state.running=false; clearTimeout(state.timer);
+      UI.finalScore.textContent = state.score; UI.finalStreak.textContent = state.streak;
+      if(state.score>state.best){ state.best=state.score; localStorage.setItem('mp_best', String(state.best)); }
       UI.best.textContent = state.best;
-      show(UI.over);
+      hide(UI.game); show(UI.over);
     }
 
-    function togglePause(){
+    function tick(){
       if(!state.running) return;
-      state.paused = !state.paused;
-      UI.toast.textContent = state.paused? 'Jeda':'Lanjut';
-      UI.toast.style.display = 'block';
-      clearTimeout(togglePause._t); togglePause._t=setTimeout(()=> UI.toast.style.display='none', 800);
-    }
-
-    function share(){
-      const text = `Aku baru dapat skor ${state.score} di Dodge & Collect! 🎮 Level ${state.level}. Coba kalahkan skor-ku!`;
-      if(navigator.share){ navigator.share({title:'Dodge & Collect', text}); }
-      else { navigator.clipboard.writeText(text); alert('Teks skor disalin, tinggal tempel di media sosial!'); }
-    }
-
-    // Spawning logic
-    function spawnInitial(){
-      for(let i=0;i<6;i++) spawnOrb();
-      for(let i=0;i<3;i++) spawnHazard();
-    }
-    function spawnOrb(){
-      const w = canvas.clientWidth, h = canvas.clientHeight; // CSS pixels
-      orbs.push({x: rand(24, w-24), y: rand(24, h-24), r: 10, vx: rand(-1.5, 1.5), vy: rand(-1.5,1.5)});
-    }
-    function spawnHazard(){
-      const w = canvas.clientWidth, h = canvas.clientHeight;
-      const speed = rand(1.2, 2.2) + state.level*0.15;
-      const angle = Math.random()*Math.PI*2;
-      hazards.push({x: rand(24, w-24), y: rand(24, h-24), r: 14, vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed});
-    }
-
-    // Helpers
-    function rand(a,b){ return a + Math.random()*(b-a); }
-    function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
-    function dist(a,b){ const dx=a.x-b.x, dy=a.y-b.y; return Math.hypot(dx,dy); }
-
-    // Loop
-    function loop(){
-      if(!state.running) return;
-      requestAnimationFrame(loop);
-      if(state.paused) return;
-      state.frame++;
-
-      // Update difficulty
-      if(state.frame % 600 === 0){ // tiap 10 detik @60fps
-        state.level++; spawnHazard(); spawnHazard();
+      if(!state.paused){
+        state.t -= 1; UI.time.textContent = state.t;
+        UI.bar.style.width = Math.max(0, (state.t/60)*100) + '%';
+        if(state.t<=0) return gameOver();
       }
-
-      // Move player
-      const accel = 0.5;
-      if(keys.has('w') || keys.has('arrowup')) player.vy -= accel;
-      if(keys.has('s') || keys.has('arrowdown')) player.vy += accel;
-      if(keys.has('a') || keys.has('arrowleft')) player.vx -= accel;
-      if(keys.has('d') || keys.has('arrowright')) player.vx += accel;
-      // friction
-      player.vx *= 0.92; player.vy *= 0.92;
-      const spd = Math.hypot(player.vx, player.vy);
-      if(spd > player.max){ player.vx = player.vx/spd*player.max; player.vy = player.vy/spd*player.max; }
-
-      player.x += player.vx; player.y += player.vy;
-      const w = canvas.clientWidth, h = canvas.clientHeight;
-      player.x = clamp(player.x, player.r, w-player.r);
-      player.y = clamp(player.y, player.r, h-player.r);
-
-      // Move orbs & hazards (bounce di tepi)
-      for(const o of orbs){ o.x += o.vx; o.y += o.vy; if(o.x<o.r||o.x>w-o.r) o.vx*=-1; if(o.y<o.r||o.y>h-o.r) o.vy*=-1; }
-      for(const hz of hazards){ hz.x += hz.vx; hz.y += hz.vy; if(hz.x<hz.r||hz.x>w-hz.r) hz.vx*=-1; if(hz.y<hz.r||hz.y>h-hz.r) hz.vy*=-1; }
-
-      // Collisions
-      for(let i=orbs.length-1;i>=0;i--){
-        if(dist(player, orbs[i]) < player.r + orbs[i].r){
-          orbs.splice(i,1); state.score+=10; UI.score.textContent = state.score; if(state.sound) playSafe(sndCollect); spawnOrb();
-        }
-      }
-      for(let i=hazards.length-1;i>=0;i--){
-        if(dist(player, hazards[i]) < player.r + hazards[i].r){
-          hazards.splice(i,1); state.lives--; UI.lives.textContent = state.lives; flash('#f43f5e'); if(state.sound) playSafe(sndHit);
-          // knockback
-          player.vx *= -0.6; player.vy *= -0.6; spawnHazard();
-          if(state.lives<=0) return gameOver();
-        }
-      }
-
-      // Add small passive score
-      if(state.frame%30===0){ state.score++; UI.score.textContent = state.score; }
-
-      // Render
-      render();
+      state.timer = setTimeout(tick, 1000);
     }
 
-    function render(){
-      const w = canvas.clientWidth, h=canvas.clientHeight;
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-
-      // Background grid
-      ctx.save();
-      ctx.globalAlpha = .12;
-      const step=32; ctx.beginPath();
-      for(let x=0;x<w;x+=step){ ctx.moveTo(x,0); ctx.lineTo(x,h); }
-      for(let y=0;y<h;y+=step){ ctx.moveTo(0,y); ctx.lineTo(w,y); }
-      ctx.strokeStyle = '#9ca3af'; ctx.stroke();
-      ctx.restore();
-
-      // Orbs (good)
-      for(const o of orbs){
-        drawGlowCircle(o.x, o.y, o.r+8, 'rgba(52,211,153,.25)');
-        drawCircle(o.x, o.y, o.r, '#34d399');
-      }
-      // Hazards (bad)
-      for(const hz of hazards){
-        drawGlowCircle(hz.x, hz.y, hz.r+8, 'rgba(244,63,94,.22)');
-        drawCircle(hz.x, hz.y, hz.r, '#f43f5e');
-      }
-      // Player
-      drawGlowCircle(player.x, player.y, player.r+10, 'rgba(110,231,255,.25)');
-      drawCircle(player.x, player.y, player.r, '#6ee7ff');
-
-      // HUD gradient vignette
-      const grd = ctx.createRadialGradient(w/2,h/2,10,w/2,h/2, Math.max(w,h));
-      grd.addColorStop(0,'rgba(255,255,255,0)');
-      grd.addColorStop(1,'rgba(0,0,0,.25)');
-      ctx.fillStyle = grd; ctx.fillRect(0,0,w,h);
-
-      UI.level.textContent = state.level;
+    function pauseToggle(){
+      if(!state.running) return; state.paused = !state.paused; toast(state.paused? 'Jeda' : 'Lanjut');
     }
 
-    function drawCircle(x,y,r,color){
-      ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
-      ctx.fillStyle = color; ctx.fill();
-    }
-    function drawGlowCircle(x,y,r,color){
-      ctx.save(); ctx.fillStyle=color; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill(); ctx.restore();
-    }
+    function play(audio){ try{ audio.currentTime=0; audio.volume=.7; audio.play(); }catch(e){} }
 
-    function flash(color){
-      const el = document.querySelector('.wrap');
-      const prev = el.style.boxShadow;
-      el.style.boxShadow = `0 0 0 4px ${color}33, var(--shadow)`;
-      setTimeout(()=> el.style.boxShadow = prev, 180);
-    }
+    // ===== Events =====
+    controls.startBtn.onclick = start; controls.playBtn.onclick = start; controls.againBtn.onclick = start; controls.restartBtn.onclick = start;
+    controls.pauseBtn.onclick = pauseToggle; controls.skipBtn.onclick = ()=>{ state.score=Math.max(0,state.score-1); UI.score.textContent=state.score; state.streak=0; UI.streak.textContent='0'; renderQuestion(); };
+    controls.shareBtn.onclick = ()=>{ const text=`Skorku ${state.score} di Math Puzzle! Coba kalahkan ya!`; if(navigator.share) navigator.share({title:'Math Puzzle', text}); else { navigator.clipboard.writeText(text); alert('Teks disalin!'); } };
 
-    function playSafe(audio){
-      try{ audio.currentTime=0; audio.volume=.6; audio.play(); }catch(e){}
-    }
+    controls.diff.onchange = e=>{ state.difficulty = Number(e.target.value); if(state.running) renderQuestion(); };
+    controls.type.onchange = e=>{ state.kind = e.target.value; if(state.running) renderQuestion(); };
 
-    // Pause with spacebar only when game already started
+    controls.toggleSound.onclick = (e)=>{ state.sound=!state.sound; e.target.setAttribute('aria-pressed', state.sound); e.target.textContent = 'Suara: ' + (state.sound?'ON':'OFF'); };
+    controls.toggleMode.onclick = (e)=>{
+      state.mode = state.mode==='input'? 'choice':'input';
+      e.target.textContent = 'Mode: ' + (state.mode==='input'? 'Isian':'Pilihan');
+      if(state.running) renderQuestion();
+    };
+
+    // Enter to submit
+    UI.ans.addEventListener('keydown', (e)=>{
+      if(e.key==='Enter') submit();
+    });
+
+    // Keyboard shortcuts
     document.addEventListener('keydown', (e)=>{
-      if(e.code==='Space') e.preventDefault();
+      if(e.key===' '){ e.preventDefault(); pauseToggle(); }
+      if(e.key.toLowerCase()==='n'){ start(); }
     }, {passive:false});
 
+    // Cara main dialog
+    controls.howBtn.onclick = ()=>{
+      alert('Jawab sebanyak mungkin soal dalam 60 detik. \n\n— Pilih jenis soal (penjumlahan, pengurangan, perkalian, cari x, bandingkan).\n— Pilih mode Isian (ketik) atau Pilihan (4 opsi).\n— Tiap jawaban benar menaikkan streak dan bonus skor.\n— Lewati soal (−1 poin) bila buntu. Spasi = jeda. Selamat bermain!');
+    };
+
+    // Init
+    hide(UI.game); hide(UI.over); show(UI.menu);
   })();
   </script>
 </body>
